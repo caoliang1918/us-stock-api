@@ -1,0 +1,22 @@
+package com.ibkr.queue;
+
+import com.ibkr.entity.MessageQueue;
+
+/**
+ * Created by caoliang on 2019/1/14
+ */
+public interface QueueService {
+
+    /**
+     * 添加元素
+     *
+     * @param messageQueue
+     */
+    void add(MessageQueue messageQueue);
+
+
+    /**
+     * 弹出元素
+     */
+    MessageQueue poll();
+}

@@ -1,0 +1,86 @@
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Highcharts图表</title>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+</head>
+<body>
+
+<input type="hidden" id ="seriesData" th:value="${seriesData}"  />
+<input type="hidden" id ="xAxis" th:value="${xAxis}"  />
+<input type="hidden" id ="code" th:value="${code}"  />
+<input type="hidden" id ="name" th:value="${name}"  />
+<div id="container" style="width: 1550px; height: 700px; margin: 0 auto"></div>
+<script language="JavaScript">
+    $(document).ready(function() {
+
+        var xAxis = $('#xAxis').val().split(",");
+        var seriesData = $('#seriesData').val().split(",");
+        var name = $('#name').val();
+        var code = $('#code').val();
+        var data = [];
+        console.info(xAxis)
+        console.info(seriesData)
+
+
+        seriesData.forEach(function(d,index,arr){
+            data.push(parseFloat(d));
+        });
+
+
+
+
+        var title = {
+            text: name
+        };
+        var subtitle = {
+            text: 'Source: https://www.interactivebrokers.com.hk'
+        };
+        var xAxis = {
+            categories: xAxis
+        };
+        var yAxis = {
+            title: {
+                text: 'Temperature ($)'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        };
+
+        var tooltip = {
+            valueSuffix: '$'
+        }
+
+        var legend = {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        };
+
+        var series =  [
+            {
+                name: code,
+                data: data
+            }
+        ];
+
+        var json = {};
+
+        json.title = title;
+        json.subtitle = subtitle;
+        json.xAxis = xAxis;
+        json.yAxis = yAxis;
+        json.tooltip = tooltip;
+        json.legend = legend;
+        json.series = series;
+
+        $('#container').highcharts(json);
+    });
+</script>
+</body>
+</html>
