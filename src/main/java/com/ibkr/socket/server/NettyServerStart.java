@@ -30,7 +30,7 @@ public class NettyServerStart {
 
 
     private EventLoopGroup boss = new NioEventLoopGroup();
-    private EventLoopGroup work = new NioEventLoopGroup();
+    private EventLoopGroup work = new NioEventLoopGroup(10);
 
     @Value("${tcp.port}")
     private int port;
@@ -69,6 +69,6 @@ public class NettyServerStart {
         }
         ChannelFuture future = nioSocketChannel.writeAndFlush(Unpooled.copiedBuffer(messageReq, CharsetUtil.UTF_8));
         future.addListener((ChannelFutureListener) channelFuture ->
-                logger.info("服务端手动发消息成功:{}", messageReq));
+                logger.info("服务端发消息成功:{}", messageReq));
     }
 }

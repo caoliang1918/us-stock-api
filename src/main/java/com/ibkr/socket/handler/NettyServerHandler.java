@@ -62,15 +62,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
         logger.debug("receive message : {}", messgae);
         super.channelRead(ctx, msg);
         if (msg instanceof MessageProtocol) {
-            MessageProtocol messageProtocol = (MessageProtocol) msg;
-            if (messageProtocol.getId() == 0) {
-                //回心跳消息
-                messageProtocol.setCts(new Date());
-                messageProtocol.setStation("server");
-                messageProtocol.setBody("pong");
-                ByteBuf byteBuf = Unpooled.unreleasableBuffer(Unpooled.copiedBuffer(JSON.toJSONString(messageProtocol), CharsetUtil.UTF_8));
-                ctx.writeAndFlush(byteBuf).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
-            }
+            //todo
         }
     }
 
@@ -90,8 +82,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
                 logger.debug("10秒没有收到客户端信息,关闭连接！");
                 //向客户端发送心跳消息
                 MessageProtocol messageProtocol = new MessageProtocol();
-                messageProtocol.setId(0L);
-                messageProtocol.setStation("acd-server");
+                messageProtocol.setId(1L);
+                messageProtocol.setStation("1001");
                 messageProtocol.setBody("10秒没有收到客户端信息,关闭连接");
                 messageProtocol.setCts(new Date());
                 ByteBuf byteBuf = Unpooled.unreleasableBuffer(Unpooled.copiedBuffer(messageProtocol.toString(), CharsetUtil.UTF_8));
@@ -116,6 +108,6 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
         logger.info("register success");
         ctx.fireChannelRegistered();
         NioSocketChannel channel = (NioSocketChannel) ctx.channel();
-        ChannelRepository.put("ACS" , channel);
+        ChannelRepository.put("ACS", channel);
     }
 }

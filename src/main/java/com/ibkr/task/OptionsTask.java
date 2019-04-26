@@ -48,9 +48,9 @@ public class OptionsTask {
 
 
     /**
-     * 未来只做这几只期权，坚决不碰不熟悉的期权  "SPY", "SQ", "NFLX", "NVDA", "AMD", "BA"
+     * 未来只做这几只期权，坚决不碰不熟悉的期权  "SPY", "SQ", "NFLX", "NVDA", "AMD", "BA","BABA"
      */
-    private String[] symbols = new String[]{"SPY"};
+    private String[] symbols = new String[]{"SPY", "SQ", "NFLX", "NVDA", "AMD", "BA","BABA"};
 
 
     private final static String TIME_ZONE = "GMT-5";
@@ -75,7 +75,7 @@ public class OptionsTask {
     private Boolean simple = false;
 
     private String startTime = "08:30:00";
-    private String endTime = "17:00:00";
+    private String endTime = "16:30:00";
 
 
     /**

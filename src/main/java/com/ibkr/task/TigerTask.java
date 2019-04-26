@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.text.ParseException;
@@ -54,6 +55,12 @@ public class TigerTask {
 
     @Autowired
     private StockQueryService stockQueryService;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Value("${wx.address}")
+    private String wxAddress;
 
     private BlockingQueue<StockQuery> queue = new LinkedBlockingDeque<>();
 
@@ -265,9 +272,9 @@ public class TigerTask {
             public void positionChange(JSONObject jsonObject) {
                 logger.info("positionChange : {} ", jsonObject);
                 /**
-                 * 持仓变化
+                 * 持仓变化，推送到微信filehelp
                  */
-
+                restTemplate.postForEntity(wxAddress + "positionChange", jsonObject, String.class);
             }
 
             @Override
@@ -350,17 +357,13 @@ public class TigerTask {
 
 
         Set<String> symbols = new HashSet<>();
-        symbols.add("SPY");
-
-        /**
-         * 订阅标普500ETF期权
-         */
-        client.subscribeOption(symbols);
-
         stockPriceList.forEach(p -> {
             symbols.add(p.getSymbol());
         });
-
+        /**
+         * 订阅行情数据接口
+         */
+        client.subscribeQuote(symbols);
 
         /**
          * 订单、资产、持仓
@@ -370,10 +373,6 @@ public class TigerTask {
         client.subscribe(Position);
 
 
-        /**
-         * 订阅行情数据接口
-         */
-        client.subscribeQuote(symbols);
         callback.client(client);
     }
 

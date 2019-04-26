@@ -11,6 +11,7 @@ import com.tigerbrokers.stock.openapi.client.https.request.TigerHttpRequest;
 import com.tigerbrokers.stock.openapi.client.https.response.TigerHttpResponse;
 import com.tigerbrokers.stock.openapi.client.struct.enums.SecType;
 import com.tigerbrokers.stock.openapi.client.util.builder.AccountParamBuilder;
+import com.tigerbrokers.stock.openapi.client.util.builder.TradeParamBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,5 +90,19 @@ public class AccountServiceImpl implements AccountService {
         }
 
         return orderList;
+    }
+
+    @Override
+    public TigerHttpResponse cancelOrder(Long orderId) {
+        TigerHttpRequest request = new TigerHttpRequest(ApiServiceType.CANCEL_ORDER);
+
+        String bizContent = TradeParamBuilder.instance()
+                .account(account)
+                .id(orderId)
+                .buildJson();
+
+        request.setBizContent(bizContent);
+        TigerHttpResponse response = client.execute(request);
+        return response;
     }
 }
