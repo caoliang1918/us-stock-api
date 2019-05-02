@@ -91,7 +91,7 @@ public class MessageQueue implements Serializable, Delayed {
     @Override
     public long getDelay(TimeUnit unit) {
         //延迟20秒
-        return unit.convert(date.getTime() + 20000 - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+        return unit.convert(date.getTime() + 60000 - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
     }
 
     @Override
