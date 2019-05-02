@@ -2,6 +2,7 @@ package com.ibkr.queue;
 
 import com.alibaba.fastjson.JSON;
 import com.ibkr.entity.MessageQueue;
+import com.ibkr.util.Levenshtein;
 import com.tigerbrokers.stock.openapi.client.util.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by caoliang on 2019/1/14
@@ -43,11 +47,14 @@ public class Consumer implements Runnable {
             try {
                 MessageQueue message = queueService.poll();
                 if (message != null) {
-                    logger.info("{}", message.toString());
+                    logger.info("queue poll : {}", message.toString());
                     if (message.getOption().equals("option")){
                         restTemplate.postForEntity(wxAddress+"sendOption", message, String.class);
                     }else {
-                        restTemplate.postForEntity(wxAddress+"sendMessage", message, String.class);
+                        if (checkContent(message)){
+                            logger.info("send message:{}" , message.toString());
+                            restTemplate.postForEntity(wxAddress+"sendMessage", message, String.class);
+                        }
                     }
                 }
                 Thread.sleep(500);
@@ -55,5 +62,24 @@ public class Consumer implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+
+    private boolean checkContent(MessageQueue first) {
+        /**
+         * 判断相似度
+         */
+        Levenshtein levenshtein = new Levenshtein();
+        Iterator<MessageQueue> iterable = queueService.iterator();
+        while (iterable.hasNext()) {
+            MessageQueue messageQueue = iterable.next();
+            /**
+             * 文本相似度
+             */
+            if (levenshtein.getSimilarityRatio(messageQueue.getContent(), first.getContent()) > 0.6F || messageQueue.getId().equals(first.getId())) {
+                return false;
+            }
+        }
+        return true;
     }
 }

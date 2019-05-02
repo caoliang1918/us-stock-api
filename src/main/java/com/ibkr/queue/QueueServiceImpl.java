@@ -4,6 +4,7 @@ import com.ibkr.entity.MessageQueue;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.DelayQueue;
@@ -25,8 +26,10 @@ public class QueueServiceImpl implements QueueService {
         MessageQueue exist = queueMap.get(messageQueue.getId());
         if (exist != null) {
             queue.remove(exist);
+            queueMap.remove(messageQueue.getId());
         }
         queue.add(messageQueue);
+        queueMap.put(messageQueue.getId() , messageQueue);
     }
 
     @Override
@@ -37,5 +40,10 @@ public class QueueServiceImpl implements QueueService {
         }
         queueMap.remove(messageQueue.getId());
         return messageQueue;
+    }
+
+    @Override
+    public Iterator<MessageQueue> iterator() {
+        return queueMap.values().iterator();
     }
 }
