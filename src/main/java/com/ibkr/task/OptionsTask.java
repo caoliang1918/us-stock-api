@@ -4,9 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.ibkr.entity.MessageQueue;
 import com.ibkr.entity.OptionDetail;
 import com.ibkr.entity.StockOptions;
-import com.ibkr.entity.response.PendingOrder;
-import com.ibkr.queue.QueueService;
-import com.ibkr.service.AccountService;
 import com.ibkr.service.StockApiService;
 import com.ibkr.service.StockQueryService;
 import com.ibkr.util.DateUtil;
@@ -16,7 +13,6 @@ import com.tigerbrokers.stock.openapi.client.https.domain.option.item.OptionReal
 import com.tigerbrokers.stock.openapi.client.https.domain.option.model.OptionChainModel;
 import com.tigerbrokers.stock.openapi.client.https.request.option.OptionChainQueryRequest;
 import com.tigerbrokers.stock.openapi.client.https.response.option.OptionChainResponse;
-import com.tigerbrokers.stock.openapi.client.struct.enums.SecType;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,15 +22,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
-import sun.misc.BASE64Encoder;
 
-import javax.crypto.Cipher;
-import javax.xml.crypto.Data;
-import java.security.KeyFactory;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.X509EncodedKeySpec;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -50,7 +39,7 @@ public class OptionsTask {
     /**
      * 未来只做这几只期权，坚决不碰不熟悉的期权  "SPY", "SQ", "NFLX", "NVDA", "AMD", "BA","BABA"
      */
-    private String[] symbols = new String[]{"SPY", "SQ", "NFLX", "NVDA", "AMD", "BA","BABA"};
+    private String[] symbols = new String[]{"SPY", "SQ", "NFLX", "NVDA", "AMD", "BA", "BABA"};
 
 
     private final static String TIME_ZONE = "GMT-5";

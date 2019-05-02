@@ -3,6 +3,7 @@ package com.ibkr.task;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.ibkr.entity.MessageQueue;
 import com.ibkr.entity.StockPrice;
 import com.ibkr.entity.StockProduct;
 import com.ibkr.entity.StockQuery;
@@ -274,7 +275,11 @@ public class TigerTask {
                 /**
                  * 持仓变化，推送到微信filehelp
                  */
-                restTemplate.postForEntity(wxAddress + "positionChange", jsonObject, String.class);
+                MessageQueue messageQueue = new MessageQueue();
+                messageQueue.setOption("positionChange");
+                messageQueue.setId(System.currentTimeMillis());
+                messageQueue.setContent(jsonObject.toJSONString());
+                restTemplate.postForEntity(wxAddress + "positionChange", messageQueue, String.class);
             }
 
             @Override
