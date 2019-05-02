@@ -45,7 +45,7 @@ import static com.tigerbrokers.stock.openapi.client.struct.enums.Subject.*;
  * Created by caoliang on 2018/11/7
  */
 
-//@Component
+@Component
 public class TigerTask {
     Logger logger = LoggerFactory.getLogger(TigerTask.class);
 
