@@ -38,7 +38,6 @@ public class SimpleEchoClient {
     private String wxAddress;
 
 
-    @PostConstruct
     public void connect() {
         WebSocketClient client = new WebSocketClient();
         try {
@@ -47,11 +46,16 @@ public class SimpleEchoClient {
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             SimpleEchoSocket simpleEchoSocket = new SimpleEchoSocket(host, startMessage, queueService, wxAddress);
             Future<Session> sessionFuture = client.connect(simpleEchoSocket, uri, request);
-            logger.info("Connecting to : {}", uri);
+            logger.info("Connecting to : {} , {}", uri, sessionFuture.get().isOpen());
         } catch (Throwable t) {
             t.printStackTrace();
         }
+    }
 
+
+    @PostConstruct
+    public void connectAfter() {
+        connect();
         new Thread(new Consumer(queueService, restTemplate, wxAddress)).start();
     }
 

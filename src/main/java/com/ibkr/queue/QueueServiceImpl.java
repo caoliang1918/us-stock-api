@@ -1,6 +1,8 @@
 package com.ibkr.queue;
 
 import com.ibkr.entity.MessageQueue;
+import com.ibkr.socket.client.SimpleEchoClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -20,6 +22,9 @@ public class QueueServiceImpl implements QueueService {
 
     public DelayQueue<MessageQueue> queue = new DelayQueue<MessageQueue>();
 
+
+    @Autowired
+    private SimpleEchoClient simpleEchoClient;
 
     @Override
     public void add(MessageQueue messageQueue) {
@@ -45,5 +50,10 @@ public class QueueServiceImpl implements QueueService {
     @Override
     public Iterator<MessageQueue> iterator() {
         return queueMap.values().iterator();
+    }
+
+    @Override
+    public void wsClose() {
+        simpleEchoClient.connect();
     }
 }

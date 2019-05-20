@@ -29,7 +29,7 @@ import java.util.*;
 /**
  * Created by caoliang on 2019/2/21
  * <p>
- * 美股的期权和港股的牛熊证
+ * 美股的期权
  */
 @Component
 public class OptionsTask {
@@ -63,8 +63,8 @@ public class OptionsTask {
 
     private Boolean simple = false;
 
-    private String startTime = "08:30:00";
-    private String endTime = "16:30:00";
+    private String startTime = "08:40:00";
+    private String endTime = "15:30:00";
 
 
     /**

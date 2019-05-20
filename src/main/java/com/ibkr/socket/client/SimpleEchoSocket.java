@@ -81,6 +81,7 @@ public class SimpleEchoSocket implements WebSocketListener {
         logger.info("Connection closed statusCode:{} ,reason:{} ", i, s);
         this.session = null;
         this.closeLatch.countDown();
+        queueService.wsClose();
     }
 
     @Override
@@ -103,6 +104,7 @@ public class SimpleEchoSocket implements WebSocketListener {
     @Override
     public void onWebSocketError(Throwable throwable) {
         logger.error(throwable.getMessage());
+        queueService.wsClose();
     }
 
 
