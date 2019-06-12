@@ -54,6 +54,10 @@ public class QueueServiceImpl implements QueueService {
 
     @Override
     public void wsClose() {
-        simpleEchoClient.connect();
+        try {
+            simpleEchoClient.connect();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

@@ -47,8 +47,8 @@ public class SimpleEchoClient {
             SimpleEchoSocket simpleEchoSocket = new SimpleEchoSocket(host, startMessage, queueService, wxAddress);
             Future<Session> sessionFuture = client.connect(simpleEchoSocket, uri, request);
             logger.info("Connecting to : {} , {}", uri, sessionFuture.get().isOpen());
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

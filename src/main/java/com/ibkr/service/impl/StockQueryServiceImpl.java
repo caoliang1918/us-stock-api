@@ -55,7 +55,7 @@ public class StockQueryServiceImpl implements StockQueryService {
 
     @Override
     public int saveStockQuery(StockQuery stockQuery) {
-        StockQuery exitStockQuery = stockQueryMapper.selectByUniqueKey(stockQuery.getUts(), stockQuery.getSymbol());
+        StockQuery exitStockQuery = stockQueryMapper.selectByUniqueKey(stockQuery.getUts(), stockQuery.getSymbol() , stockQuery.getPrice());
         if (exitStockQuery != null) {
             return 0;
         }

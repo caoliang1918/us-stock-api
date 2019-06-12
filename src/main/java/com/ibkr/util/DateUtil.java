@@ -15,7 +15,7 @@ public class DateUtil {
 
     public static final String TIME = "HH:mm:ss";
     public static final String DAY = "yyyy-MM-dd";
-    public static final String DAT_TIME = "yyyy-MM-dd HH:mm:ss";
+    public static final String DAT_TIME = "yyyy-MM-dd HH:mm:ss.SSS";
 
 
     /**

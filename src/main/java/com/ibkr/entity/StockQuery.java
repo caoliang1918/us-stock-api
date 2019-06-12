@@ -239,17 +239,4 @@ public class StockQuery implements Serializable {
     public void setVolume(Integer volume) {
         this.volume = volume;
     }
-
-    @Override
-    public String toString() {
-        return "{" +
-                ", name='" + name + '\'' +
-                ", cts=" + DateFormatUtils.format(cts , "yyyy-MM-dd HH:mm:ss") +
-                ", uts=" + DateFormatUtils.format(uts , "yyyy-MM-dd HH:mm:ss") +
-                ", symbol='" + symbol + '\'' +
-                ", avgPrice='" + avgPrice + '\'' +
-                ", price='" + price + '\'' +
-                ", volume=" + volume +
-                '}';
-    }
 }

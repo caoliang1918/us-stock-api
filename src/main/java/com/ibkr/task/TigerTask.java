@@ -396,8 +396,8 @@ public class TigerTask {
                     if (stockQuery != null) {
                         stockQueryService.saveStockQuery(stockQuery);
                     }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    logger.warn("{}" , e.getMessage());
                 }
             }
         }
