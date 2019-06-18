@@ -325,5 +325,12 @@ public class TigerRestController {
 
     }
 
+    @GetMapping("shortStock")
+    public CommonResponse shortStock(String symbol) {
+
+
+        return new CommonResponse(stockQueryService.findShortStock("BABA"));
+
+    }
 
 }

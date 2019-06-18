@@ -5,6 +5,7 @@ import com.ibkr.entity.StockOptions;
 import com.ibkr.entity.StockProduct;
 import com.ibkr.entity.StockQuery;
 import com.tigerbrokers.stock.openapi.client.https.domain.option.item.OptionBriefItem;
+import com.tigerbrokers.stock.openapi.client.https.domain.quote.item.ShortableStockItem;
 import com.tigerbrokers.stock.openapi.client.struct.enums.Market;
 
 import java.util.List;
@@ -70,4 +71,13 @@ public interface StockQueryService {
      * @return
      */
     List<StockOptions> getStockOptions(StockOptions stockOptions);
+
+
+    /**
+     * 获取做空数据
+     *
+     * @param symbol
+     * @return
+     */
+    ShortableStockItem findShortStock(String symbol);
 }

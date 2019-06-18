@@ -32,7 +32,7 @@
     select 
     <include refid="Base_Column_List" />
     from stock_query
-    where uts = #{uts,jdbcType=TIMESTAMP} and symbol = #{symbol , jdbcType=VARCHAR}
+    where symbol = #{symbol} and cts = #{cts} and price = #{price}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     <!--

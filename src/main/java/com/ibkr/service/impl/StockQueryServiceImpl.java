@@ -16,12 +16,15 @@ import com.tigerbrokers.stock.openapi.client.https.client.TigerHttpClient;
 import com.tigerbrokers.stock.openapi.client.https.domain.option.item.OptionBriefItem;
 import com.tigerbrokers.stock.openapi.client.https.domain.option.item.TradeTickPoint;
 import com.tigerbrokers.stock.openapi.client.https.domain.option.model.OptionCommonModel;
+import com.tigerbrokers.stock.openapi.client.https.domain.quote.item.ShortableStockItem;
 import com.tigerbrokers.stock.openapi.client.https.request.TigerHttpRequest;
 import com.tigerbrokers.stock.openapi.client.https.request.option.OptionBriefQueryRequest;
 import com.tigerbrokers.stock.openapi.client.https.request.option.OptionTradeTickQueryRequest;
+import com.tigerbrokers.stock.openapi.client.https.request.quote.QuoteShortableStockRequest;
 import com.tigerbrokers.stock.openapi.client.https.response.TigerHttpResponse;
 import com.tigerbrokers.stock.openapi.client.https.response.option.OptionBriefResponse;
 import com.tigerbrokers.stock.openapi.client.https.response.option.OptionTradeTickResponse;
+import com.tigerbrokers.stock.openapi.client.https.response.quote.QuoteShortableStockResponse;
 import com.tigerbrokers.stock.openapi.client.struct.enums.Market;
 import com.tigerbrokers.stock.openapi.client.util.builder.QuoteParamBuilder;
 import org.slf4j.Logger;
@@ -55,11 +58,11 @@ public class StockQueryServiceImpl implements StockQueryService {
 
     @Override
     public int saveStockQuery(StockQuery stockQuery) {
-        StockQuery exitStockQuery = stockQueryMapper.selectByUniqueKey(stockQuery.getUts(), stockQuery.getSymbol() , stockQuery.getPrice());
+        StockQuery exitStockQuery = stockQueryMapper.selectByUniqueKey(stockQuery.getCts(), stockQuery.getSymbol(), stockQuery.getPrice());
         if (exitStockQuery != null) {
             return 0;
         }
-        logger.info("add symbol:{} , date:{} , price:{} , volume:{} ", stockQuery.getSymbol(), stockQuery.getUts(), stockQuery.getPrice() , stockQuery.getVolume());
+        logger.info("add symbol:{} , date:{} , price:{} , volume:{} ", stockQuery.getSymbol(), stockQuery.getUts(), stockQuery.getPrice(), stockQuery.getVolume());
         return stockQueryMapper.insertSelective(stockQuery);
     }
 
@@ -175,13 +178,27 @@ public class StockQueryServiceImpl implements StockQueryService {
         if (stockOptionsMapper.selectByPrimaryKey(stockOptions) != null) {
             return 0;
         }
-        logger.info("stockOptions:{}" , JSON.toJSONString(stockOptions));
+        logger.info("stockOptions:{}", JSON.toJSONString(stockOptions));
         return stockOptionsMapper.insert(stockOptions);
     }
 
     @Override
     public List<StockOptions> getStockOptions(StockOptions stockOptions) {
         return stockOptionsMapper.selectByOptions(stockOptions);
+    }
+
+    @Override
+    public ShortableStockItem findShortStock(String symbol) {
+        List<String> list = new ArrayList<>();
+        list.add(symbol);
+        QuoteShortableStockResponse response = tigerHttpClient.execute(QuoteShortableStockRequest.newRequest(list));
+        if (!response.isSuccess()) {
+            return null;
+        }
+        ShortableStockItem stockItem = new ShortableStockItem();
+        stockItem.setSymbol(symbol);
+        stockItem.setItems(response.getShortableStockItems().get(0).getItems());
+        return stockItem;
     }
 
 

@@ -224,12 +224,11 @@ public class TigerTask {
         return sdf.format(date);
     }
 
-    public Date format(Long timestamp, TimeZone timeZone) {
+    public static Date format(Long timestamp, TimeZone timeZone) {
         if (timestamp == null) {
             return null;
         }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtil.DAT_TIME);
-        simpleDateFormat.setTimeZone(timeZone);
         String d = DateFormatUtils.format(timestamp, DateUtil.DAT_TIME, timeZone);
         try {
             return simpleDateFormat.parse(d);
@@ -379,6 +378,13 @@ public class TigerTask {
 
 
         callback.client(client);
+    }
+
+
+    public static void main(String[] args) {
+        TigerTask task = new TigerTask();
+        String s = task.format(new Date() , TimeZone.getTimeZone("GMT-4") , DateUtil.DAT_TIME);
+        System.out.println(s);
     }
 
 
