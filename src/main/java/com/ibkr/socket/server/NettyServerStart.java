@@ -2,16 +2,17 @@ package com.ibkr.socket.server;
 
 import com.alibaba.fastjson.JSON;
 import com.ibkr.socket.channel.NettyChannelInitializer;
+import com.ibkr.socket.handler.NettyServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.CharsetUtil;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +44,16 @@ public class NettyServerStart {
                 .channel(NioServerSocketChannel.class)
                 .localAddress(new InetSocketAddress(port))
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
-                .childHandler(new NettyChannelInitializer());
+                .childHandler(new ChannelInitializer<Channel>() {
+                    @Override
+                    protected void initChannel(Channel channel) throws Exception {
+                        ChannelPipeline pipeline = channel.pipeline();
+                        pipeline.addLast(new IdleStateHandler(60, 0, 0))
+                                .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, -4, 4))
+                                .addLast(new NettyServerHandler());
+
+                    }
+                });
 
         ChannelFuture channelFuture = serverBootstrap.bind().sync();
         if (channelFuture.isSuccess()) {

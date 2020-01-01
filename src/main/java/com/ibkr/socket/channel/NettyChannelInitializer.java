@@ -15,7 +15,7 @@ public class NettyChannelInitializer extends ChannelInitializer<Channel> {
     @Override
     protected void initChannel(Channel channel) throws Exception {
 
-        channel.pipeline().addLast("timeout", new IdleStateHandler(10, 0, 0))
+        channel.pipeline().addLast("timeout", new IdleStateHandler(60, 0, 0))
                 .addLast(new MessageDecoder())
                 .addLast(new NettyServerHandler());
 

@@ -29,37 +29,35 @@ public class Consumer implements Runnable {
     /**
      * 发送http数据
      */
-    private RestTemplate restTemplate;
+    private RestTemplate restTemplate = new RestTemplate();
 
     private String wxAddress;
 
 
-    public Consumer(QueueService queueService, RestTemplate restTemplate, String wxAddress) {
+    public Consumer(QueueService queueService, String wxAddress) {
         this.queueService = queueService;
-        this.restTemplate = restTemplate;
         this.wxAddress = wxAddress;
     }
 
     @Override
     public void run() {
-
         while (true) {
             try {
                 MessageQueue message = queueService.poll();
-                if (message != null) {
-                    logger.info("queue poll : {}", message.toString());
-                    if (message.getOption().equals("option")){
-                        restTemplate.postForEntity(wxAddress+"sendOption", message, String.class);
-                    }else {
-                        if (checkContent(message)){
-                            logger.info("send message:{}" , message.toString());
-                            restTemplate.postForEntity(wxAddress+"sendMessage", message, String.class);
-                        }
+                if (message == null) {
+                    return;
+                }
+                logger.info("queue poll : {}", message.toString());
+                if (message.getOption().equals("option")) {
+                    restTemplate.postForEntity(wxAddress + "sendOption", message, String.class);
+                } else {
+                    if (checkContent(message)) {
+                        logger.info("send message:{}", message.toString());
+                        restTemplate.postForEntity(wxAddress + "sendMessage", message, String.class);
                     }
                 }
-                Thread.sleep(500);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("{}", e);
             }
         }
     }

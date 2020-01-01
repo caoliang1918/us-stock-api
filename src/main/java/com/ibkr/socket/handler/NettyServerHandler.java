@@ -5,9 +5,7 @@ import com.ibkr.entity.MessageProtocol;
 import com.ibkr.socket.server.ChannelRepository;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
@@ -19,28 +17,12 @@ import java.util.Date;
 
 /**
  * Created by caoliang on 2018/7/18
- * netty服务器监听处理器
  */
-public class NettyServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
+@ChannelHandler.Sharable
+public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     private Logger logger = LoggerFactory.getLogger(NettyServerHandler.class);
 
-    /**
-     * 绑定
-     *
-     * @param channelHandlerContext
-     * @param byteBuf
-     * @throws Exception
-     */
-    @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
-        logger.info("client connect :{}", byteBuf.toString(CharsetUtil.UTF_8));
-         /*
-        if (StringUtils.isEmpty(messageProtocol.getStation())) {
-            channelHandlerContext.close().channel();
-            return;
-        }
-        ChannelRepository.put(messageProtocol.getStation(), (NioSocketChannel) channelHandlerContext.channel());*/
-    }
+
 
 
     /**
@@ -59,7 +41,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         String messgae = JSON.toJSONString(msg);
-        logger.debug("receive message : {}", messgae);
+        logger.info("receive message : {}", messgae);
         super.channelRead(ctx, msg);
         if (msg instanceof MessageProtocol) {
             //todo
@@ -73,13 +55,12 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
      * @param evt
      * @throws Exception
      */
-
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent idleStateEvent = (IdleStateEvent) evt;
             if (idleStateEvent.state() == IdleState.READER_IDLE) {
-                logger.debug("10秒没有收到客户端信息,关闭连接！");
+                logger.warn("60秒没有收到客户端信息,关闭连接！");
                 //向客户端发送心跳消息
                 MessageProtocol messageProtocol = new MessageProtocol();
                 messageProtocol.setId(1L);

@@ -25,5 +25,4 @@ public interface QueueService {
     Iterator<MessageQueue> iterator();
 
 
-    void wsClose();
 }
