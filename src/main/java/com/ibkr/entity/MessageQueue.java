@@ -79,6 +79,19 @@ public class MessageQueue implements Serializable, Delayed {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MessageQueue that = (MessageQueue) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
     public String toString() {
         return "MessageQueue{" +
                 "id=" + id +
@@ -91,7 +104,7 @@ public class MessageQueue implements Serializable, Delayed {
     @Override
     public long getDelay(TimeUnit unit) {
         //延迟20秒
-        return unit.convert(date.getTime() + 60000 - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+        return unit.convert(date.getTime() + 20000 - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
     }
 
     @Override

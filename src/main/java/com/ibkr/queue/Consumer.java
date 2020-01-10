@@ -45,9 +45,9 @@ public class Consumer implements Runnable {
             try {
                 MessageQueue message = queueService.poll();
                 if (message == null) {
-                    return;
+                    continue;
                 }
-                logger.info("queue poll : {}", message.toString());
+                logger.debug("queue poll : {}", message.toString());
                 if (message.getOption().equals("option")) {
                     restTemplate.postForEntity(wxAddress + "sendOption", message, String.class);
                 } else {

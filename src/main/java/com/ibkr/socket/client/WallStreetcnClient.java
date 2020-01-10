@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.zhongweixian.client.websocket.WsClient;
 import org.zhongweixian.listener.ConnectionListener;
 
+import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -49,6 +50,7 @@ public class WallStreetcnClient {
     @Value("${wx.address}")
     private String wxAddress;
 
+    @PostConstruct
     public void init() {
         try {
             WsClient wsClient = new WsClient(WS_URL, payload, new ConnectionListener() {
@@ -102,6 +104,7 @@ public class WallStreetcnClient {
 
                 }
             });
+            wsClient.setAutoConnect(false);
             threadPoolExecutor.execute(wsClient);
         } catch (Exception e) {
             logger.error("{}", e);
