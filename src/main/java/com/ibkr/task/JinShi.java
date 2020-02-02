@@ -47,17 +47,19 @@ public class JinShi {
         logger.debug("element: \n{}", element);
 
         String content = element.child(1).html();
-        if (content.contains("图示") || content.contains("金十网站")) {
+        if (content.contains("图示") || content.contains("金十网站") || content.contains("金十早知道")) {
             return;
         }
 
         Element hrefEle = element.child(0).getElementsByClass("jin-flash_icon").get(0);
         String id = hrefEle.children().get(0).attr("href").substring(25, 41);
-        if (content.contains("新华社") || content.contains("行情") || content.contains("开盘") || content.contains("收盘") || content.contains("纳斯达克") || content.contains("标普")) {
+        if (content.contains("高盛") || content.contains("摩根") || content.contains("行情") || content.contains("开盘") || content.contains("收盘") || content.contains("纳斯达克") || content.contains("标普")) {
             MessageQueue messageQueue = new MessageQueue();
             messageQueue.setId(Long.parseLong(id));
             messageQueue.setOption("create");
             messageQueue.setDate(new Date());
+            content = content.replace("<b>", "").replace("</b>", "");
+            content = content.replace("<br>", "").replace("</br>", "");
             messageQueue.setContent(content.replace("<h4>", "").replace("</h4>", ""));
             queueService.add(messageQueue);
             logger.info("id:{} , content:{}", messageQueue.getId(), messageQueue.getContent());

@@ -23,10 +23,6 @@ import java.util.List;
 public class CheckOrderTask {
     private Logger logger = LoggerFactory.getLogger(CheckOrderTask.class);
 
-
-    @Value("${pending.order}")
-    private Boolean pendingOrder;
-
     private String startTime = "23:30:00";
     private String endTime = "02:30:00";
 
