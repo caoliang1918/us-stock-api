@@ -1,26 +1,33 @@
 package com.ibkr.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.ibkr.entity.OptionTimeQuote;
 import com.ibkr.entity.StockOptions;
 import com.ibkr.service.StockApiService;
 import com.ibkr.util.DateUtil;
 import com.tigerbrokers.stock.openapi.client.https.client.TigerHttpClient;
-import com.tigerbrokers.stock.openapi.client.https.domain.option.item.OptionBriefItem;
-import com.tigerbrokers.stock.openapi.client.https.domain.option.item.TradeTickPoint;
+import com.tigerbrokers.stock.openapi.client.https.domain.option.item.*;
+import com.tigerbrokers.stock.openapi.client.https.domain.option.model.OptionChainModel;
 import com.tigerbrokers.stock.openapi.client.https.domain.option.model.OptionCommonModel;
 import com.tigerbrokers.stock.openapi.client.https.request.option.OptionBriefQueryRequest;
+import com.tigerbrokers.stock.openapi.client.https.request.option.OptionChainQueryRequest;
+import com.tigerbrokers.stock.openapi.client.https.request.option.OptionExpirationQueryRequest;
 import com.tigerbrokers.stock.openapi.client.https.request.option.OptionTradeTickQueryRequest;
 import com.tigerbrokers.stock.openapi.client.https.response.option.OptionBriefResponse;
+import com.tigerbrokers.stock.openapi.client.https.response.option.OptionChainResponse;
+import com.tigerbrokers.stock.openapi.client.https.response.option.OptionExpirationResponse;
 import com.tigerbrokers.stock.openapi.client.https.response.option.OptionTradeTickResponse;
+import com.zhongweixian.excel.entity.params.ExcelExportEntity;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * 行情API
@@ -71,15 +78,93 @@ public class StockApiServiceImpl implements StockApiService {
                 options.setUts(DateUtil.format(new Date(tradeTickPoint.getTime()), TimeZone.getTimeZone("GMT-5"), DateUtil.DAT_TIME));
                 options.setPrice(tradeTickPoint.getPrice().toString());
                 options.setVolume(tradeTickPoint.getVolume().intValue());
-                options.setCts(new Date());
-
                 list.add(options);
             }
             //取最后10个
-            return list.subList(list.size() - 10, list.size());
+            return list;
         } else {
             logger.error("response error:{}", response.getMessage());
         }
         return null;
+    }
+
+
+    /**
+     * 获取期权过期日
+     */
+    @Override
+    public List<Map<String , Object>> getOptionExpirations(String symbol) {
+        List<String> symbols = new ArrayList<>();
+        symbols.add(symbol);
+        OptionExpirationResponse response = tigerHttpClient.execute(new OptionExpirationQueryRequest(symbols));
+        if (!response.isSuccess() || CollectionUtils.isEmpty(response.getOptionExpirationItems())) {
+            logger.warn("{}", "response error:" + response.getMessage());
+            return null;
+        }
+        List<Map<String , Object>> optionTimeQuoteList = new ArrayList<>();
+        for (OptionExpirationItem optionExpirationItem : response.getOptionExpirationItems()) {
+            optionExpirationItem.getDates().forEach(s -> {
+                if (DateUtil.format(s, "yyyy-MM-dd").before(new Date())) {
+                    logger.warn("{}", s);
+                    return;
+                }
+                logger.info("symbol : {} , date ： {}", optionExpirationItem.getSymbol(), s);
+                optionTimeQuoteList.addAll(optionChain(optionExpirationItem.getSymbol(), s));
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+        return optionTimeQuoteList;
+    }
+
+
+    /**
+     * 期权链
+     *
+     * @param symbol 代码
+     * @param expiry 行权期
+     */
+    private List<Map<String , Object>> optionChain(String symbol, String expiry) {
+        OptionChainModel model = new OptionChainModel();
+        model.setSymbol(symbol);
+        model.setExpiry(expiry);
+        OptionChainResponse response = tigerHttpClient.execute(OptionChainQueryRequest.of(model));
+        if (!response.isSuccess() || CollectionUtils.isEmpty(response.getOptionChainItems())) {
+            logger.warn("response error:" + response.getMessage());
+            return null;
+        }
+        List<Map<String , Object>> optionTimeQuoteList = new ArrayList<>();
+
+        logger.debug(Arrays.toString(response.getOptionChainItems().toArray()));
+        for (OptionRealTimeQuoteGroup optionRealTimeQuoteGroup : response.getOptionChainItems().get(0).getItems()) {
+            if (optionRealTimeQuoteGroup.getCall() != null) {
+                logger.info("sympol:{}, expiry:{}, CALL:{}", symbol, expiry, JSON.toJSONString(optionRealTimeQuoteGroup.getCall()));
+                Map<String , Object> mapcall = new HashMap<>();
+                mapcall.put("symbol" , symbol);
+                mapcall.put("right" , "CALL");
+                mapcall.put("expiry" ,expiry);
+                mapcall.put("latestPrice" , optionRealTimeQuoteGroup.getCall().getLatestPrice());
+                mapcall.put("strike" , optionRealTimeQuoteGroup.getCall().getStrike());
+                mapcall.put("volume" , optionRealTimeQuoteGroup.getCall().getVolume());
+                mapcall.put("openInterest" , optionRealTimeQuoteGroup.getCall().getOpenInterest());
+                optionTimeQuoteList.add(mapcall);
+            }
+            if (optionRealTimeQuoteGroup.getPut() != null) {
+                logger.info("sympol:{}, expiry:{}, PUT:{}", symbol, expiry, JSON.toJSONString(optionRealTimeQuoteGroup.getPut()));
+                Map<String , Object> mapput = new HashMap<>();
+                mapput.put("symbol" , symbol);
+                mapput.put("right" , "PUT");
+                mapput.put("expiry" ,expiry);
+                mapput.put("latestPrice" , optionRealTimeQuoteGroup.getPut().getLatestPrice());
+                mapput.put("strike" , optionRealTimeQuoteGroup.getPut().getStrike());
+                mapput.put("volume" , optionRealTimeQuoteGroup.getPut().getVolume());
+                mapput.put("openInterest" , optionRealTimeQuoteGroup.getPut().getOpenInterest());
+                optionTimeQuoteList.add(mapput);
+            }
+        }
+        return optionTimeQuoteList;
     }
 }

@@ -37,9 +37,9 @@ public class OptionsTask {
 
 
     /**
-     * 未来只做这几只期权，坚决不碰不熟悉的期权  "SPY", "SQ", "NFLX", "NVDA", "AMD", "BA","BABA"
+     * 关注的期权链
      */
-    private String[] symbols = new String[]{"SPY", "SQ", "NFLX", "NVDA", "AMD", "BA", "BABA"};
+    private String[] symbols = new String[]{"SPY", "MSFT", "AAPL", "GOOG", "AMZN", "FB", "BABA", "NFLX", "NVDA", "AMD", "BA", "TSLA"};
 
 
     private final static String TIME_ZONE = "GMT-5";

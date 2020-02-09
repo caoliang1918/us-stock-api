@@ -61,4 +61,14 @@ public class DateUtil {
         }
         return null;
     }
+
+    public static Date format(String str , String parrten){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(parrten);
+        try {
+            return simpleDateFormat.parse(str);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
