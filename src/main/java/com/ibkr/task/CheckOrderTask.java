@@ -24,7 +24,7 @@ public class CheckOrderTask {
     private Logger logger = LoggerFactory.getLogger(CheckOrderTask.class);
 
 
-    @Value("${pending.order}")
+    @Value("${pending.order:1}")
     private Boolean pendingOrder;
 
     private String startTime = "23:30:00";

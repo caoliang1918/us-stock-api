@@ -111,7 +111,7 @@ public class StockApiServiceImpl implements StockApiService {
                 logger.info("symbol : {} , date ： {}", optionExpirationItem.getSymbol(), s);
                 optionTimeQuoteList.addAll(optionChain(optionExpirationItem.getSymbol(), s));
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(200);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

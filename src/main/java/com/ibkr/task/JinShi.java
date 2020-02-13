@@ -63,7 +63,7 @@ public class JinShi {
         logger.debug("element: \n{}", element);
 
         final String content = element.child(1).html();
-        if (content.contains("图示") || content.contains("金十网站")) {
+        if (content.contains("图示") || content.contains("金十")) {
             return;
         }
 
