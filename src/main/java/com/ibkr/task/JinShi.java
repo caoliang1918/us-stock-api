@@ -23,7 +23,7 @@ import java.util.List;
  * Created by caoliang on 2020-01-01
  */
 
-@Component
+//@Component
 public class JinShi {
     private Logger logger = LoggerFactory.getLogger(JinShi.class);
 
@@ -62,7 +62,7 @@ public class JinShi {
         Element element = jinFlash.child(0);
         logger.debug("element: \n{}", element);
 
-        final String content = element.child(1).html();
+        final String content = element.child(1).text();
         if (content.contains("图示") || content.contains("金十")) {
             return;
         }
