@@ -104,7 +104,7 @@ public class WallStreetcnClient {
 
                 }
             });
-            wsClient.setAutoConnect(false);
+            wsClient.setAutoReConnect(false);
             threadPoolExecutor.execute(wsClient);
         } catch (Exception e) {
             logger.error("{}", e);
