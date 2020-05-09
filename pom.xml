@@ -66,11 +66,6 @@
             <version>3.7</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-client</artifactId>
-            <version>9.4.24.v20191120</version>
-        </dependency>
-        <dependency>
             <groupId>org.zhongweixian</groupId>
             <artifactId>poi-api</artifactId>
             <version>1.0.0</version>

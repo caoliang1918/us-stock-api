@@ -1,26 +1,18 @@
 package com.ibkr.socket.server;
 
-import com.alibaba.fastjson.JSON;
-import com.ibkr.socket.channel.NettyChannelInitializer;
-import com.ibkr.socket.handler.NettyServerHandler;
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.timeout.IdleStateHandler;
-import io.netty.util.CharsetUtil;
-import org.apache.commons.lang3.ArrayUtils;
+import com.alibaba.fastjson.JSONObject;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.zhongweixian.listener.ConnectionListener;
+import org.zhongweixian.server.tcp.NettyServer;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.net.InetSocketAddress;
 
 /**
  * Created by caoliang on 2018/7/18
@@ -30,55 +22,60 @@ public class NettyServerStart {
     private Logger logger = LoggerFactory.getLogger(NettyServerStart.class);
 
 
-    private EventLoopGroup boss = new NioEventLoopGroup();
-    private EventLoopGroup work = new NioEventLoopGroup(10);
-
     @Value("${tcp.port}")
     private int port;
 
+    private NettyServer nettyServer;
+
 
     @PostConstruct
-    public void start() throws InterruptedException {
-        ServerBootstrap serverBootstrap = new ServerBootstrap()
-                .group(boss, work)
-                .channel(NioServerSocketChannel.class)
-                .localAddress(new InetSocketAddress(port))
-                .childOption(ChannelOption.SO_KEEPALIVE, true)
-                .childHandler(new ChannelInitializer<Channel>() {
-                    @Override
-                    protected void initChannel(Channel channel) throws Exception {
-                        ChannelPipeline pipeline = channel.pipeline();
-                        pipeline.addLast(new IdleStateHandler(60, 0, 0))
-                                .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, -4, 4))
-                                .addLast(new NettyServerHandler());
+    public void start() {
+        nettyServer = new NettyServer(port, new ConnectionListener() {
+            @Override
+            public void onClose(Channel channel, int i, String s) {
 
-                    }
-                });
+            }
 
-        ChannelFuture channelFuture = serverBootstrap.bind().sync();
-        if (channelFuture.isSuccess()) {
-            logger.info("netty server start , port :{}", port);
-        }
+            @Override
+            public void onError(Throwable throwable) {
 
+            }
 
+            @Override
+            public void onFail(int i, String s) {
+
+            }
+
+            @Override
+            public void onMessage(Channel channel, String s) throws Exception {
+                JSONObject jsonObject = JSONObject.parseObject(s);
+                if (jsonObject != null && "ping".equals(jsonObject.getString("cmd"))) {
+                    channel.writeAndFlush("{\"cmd\":\"pong\"," + System.currentTimeMillis() + ":}");
+                }
+            }
+
+            @Override
+            public void onMessage(Channel channel, ByteBuf byteBuf) throws Exception {
+
+            }
+
+            @Override
+            public void connect(Channel channel) throws Exception {
+
+            }
+        });
+        nettyServer.start();
     }
 
     @PreDestroy
     public void destory() {
-        boss.shutdownGracefully().syncUninterruptibly();
-        work.shutdownGracefully().syncUninterruptibly();
-        logger.info("netty stop");
+        if (nettyServer != null) {
+            logger.info("netty stop");
+        }
     }
 
 
     public void sendMesage(String channel, String messageReq) {
-        NioSocketChannel nioSocketChannel = ChannelRepository.getChannel(channel);
-        if (nioSocketChannel == null || !nioSocketChannel.isOpen()) {
-            logger.error("客户端 : {} 不存在或者已关闭!", channel);
-            return;
-        }
-        ChannelFuture future = nioSocketChannel.writeAndFlush(Unpooled.copiedBuffer(messageReq, CharsetUtil.UTF_8));
-        future.addListener((ChannelFutureListener) channelFuture ->
-                logger.info("服务端发消息成功:{}", messageReq));
+
     }
 }

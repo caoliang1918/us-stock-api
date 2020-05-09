@@ -50,7 +50,7 @@ public class JinShi {
     }
 
 
-    @Scheduled(cron = "0/10 * * * * ?")
+//    @Scheduled(cron = "0/10 * * * * ?")
     public void runTask() throws Exception {
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(BASE_URL, String.class);
         if (responseEntity == null || StringUtils.isBlank(responseEntity.getBody())) {

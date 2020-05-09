@@ -63,6 +63,8 @@ public class TigerTask {
     @Value("${wx.address}")
     private String wxAddress;
 
+    private WebSocketClient client;
+
     private BlockingQueue<StockQuery> queue = new LinkedBlockingDeque<>();
 
 
@@ -262,6 +264,9 @@ public class TigerTask {
      */
     @Scheduled(cron = "0 0 9,13,16 * * ?")
     private void wsCallBack() {
+        if (client != null && client.isConnected()) {
+            client.disconnect();
+        }
         ApiComposeCallback callback = new ApiComposeCallback() {
             @Override
             public void orderStatusChange(JSONObject jsonObject) {
@@ -356,7 +361,7 @@ public class TigerTask {
         };
 
         ApiAuthentication apiAuthentication = ApiAuthentication.build(tigerId, privateKey);
-        WebSocketClient client = new WebSocketClient("wss://openapi.itiger.com:8883", apiAuthentication, callback);
+        client = new WebSocketClient("wss://openapi.itiger.com:8883", apiAuthentication, callback);
         client.connect();
 
 
@@ -383,7 +388,7 @@ public class TigerTask {
 
     public static void main(String[] args) {
         TigerTask task = new TigerTask();
-        String s = task.format(new Date() , TimeZone.getTimeZone("GMT-4") , DateUtil.DAT_TIME);
+        String s = task.format(new Date(), TimeZone.getTimeZone("GMT-4"), DateUtil.DAT_TIME);
         System.out.println(s);
     }
 
@@ -403,7 +408,7 @@ public class TigerTask {
                         stockQueryService.saveStockQuery(stockQuery);
                     }
                 } catch (Exception e) {
-                    logger.warn("{}" , e.getMessage());
+                    logger.warn("{}", e.getMessage());
                 }
             }
         }
