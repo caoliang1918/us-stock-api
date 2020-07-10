@@ -23,7 +23,7 @@ import java.util.List;
  * Created by caoliang on 2020-01-01
  */
 
-//@Component
+@Component
 public class JinShi {
     private Logger logger = LoggerFactory.getLogger(JinShi.class);
 
@@ -41,6 +41,7 @@ public class JinShi {
         flagList.add("摩根");
         flagList.add("高盛");
         flagList.add("新华社");
+        flagList.add("央视");
         flagList.add("行情");
         flagList.add("开盘");
         flagList.add("收盘");
@@ -50,7 +51,7 @@ public class JinShi {
     }
 
 
-//    @Scheduled(cron = "0/10 * * * * ?")
+    @Scheduled(cron = "0/10 * * * * ?")
     public void runTask() throws Exception {
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(BASE_URL, String.class);
         if (responseEntity == null || StringUtils.isBlank(responseEntity.getBody())) {
@@ -62,6 +63,8 @@ public class JinShi {
         Element element = jinFlash.child(0);
         logger.debug("element: \n{}", element);
 
+        logger.info("element class:{} , id:{} , date:{}", element.className(), element.id(), element.attr("data-id"));
+
         final String content = element.child(1).text();
         if (content.contains("图示") || content.contains("金十")) {
             return;
@@ -70,12 +73,13 @@ public class JinShi {
         Element hrefEle = element.child(0).getElementsByClass("jin-flash_icon").get(0);
         String id = hrefEle.children().get(0).attr("href").substring(25, 41);
         flagList.forEach(s -> {
-            if (content.contains(s)){
+            if (content.contains(s)) {
                 String text = content;
                 MessageQueue messageQueue = new MessageQueue();
                 messageQueue.setId(Long.parseLong(id));
                 messageQueue.setOption("create");
                 messageQueue.setDate(new Date());
+                messageQueue.setChannel("金十");
                 text = text.replace("<b>", "").replace("</b>", "");
                 text = text.replace("<br>", "\n").replace("</br>", "");
                 messageQueue.setContent(text.replace("<h4>", "").replace("</h4>", ""));

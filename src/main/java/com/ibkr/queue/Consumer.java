@@ -47,17 +47,17 @@ public class Consumer implements Runnable {
                 if (message == null) {
                     continue;
                 }
-                logger.debug("queue poll : {}", message.toString());
+                logger.debug("queue poll : {}", JSON.toJSONString(message));
                 if (message.getOption().equals("option")) {
                     restTemplate.postForEntity(wxAddress + "sendOption", message, String.class);
                 } else {
                     if (checkContent(message)) {
-                        logger.info("send message:{}", message.toString());
+                        logger.info("send message:{}", JSON.toJSONString(message));
                         restTemplate.postForEntity(wxAddress + "sendMessage", message, String.class);
                     }
                 }
             } catch (Exception e) {
-                logger.error("{}", e);
+                logger.error(e.getMessage(), e);
             }
         }
     }

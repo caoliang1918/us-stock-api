@@ -52,6 +52,7 @@ public class VipJianShi {
         messageQueue.setOption("create");
         messageQueue.setDate(new Date());
         messageQueue.setContent(content);
+        messageQueue.setChannel("见闻");
         queueService.add(messageQueue);
     }
 

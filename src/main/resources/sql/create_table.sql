@@ -2,7 +2,7 @@
 
 CREATE TABLE `stock_product`
 (
-    `id`           int(11)            DEFAULT NULL,
+    `id`           bigint(20)         DEFAULT NULL,
     `cts`          timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `symbol`       varchar(255)       DEFAULT NULL,
     `sec_type`     varchar(255)       DEFAULT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE `stock_product`
 
 CREATE TABLE `stock_query`
 (
-    `id`        int(11)      NOT NULL AUTO_INCREMENT COMMENT 'PK',
+    `id`        bigint(20)   NOT NULL AUTO_INCREMENT COMMENT 'PK',
     `cts`       timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '本地时间',
     `uts`       timestamp(3) NULL     DEFAULT NULL COMMENT '交易所时间',
     `symbol`    varchar(255) NOT NULL COMMENT '股票代码',
@@ -63,7 +63,7 @@ CREATE TABLE `stock_options`
   DEFAULT CHARSET = utf8;
 
 
--------------------------
+-- -----------------------
 -- 期权查询sql
 select symbol, expiry, `right`, strike, sum(volume) as t
 from stock_options
@@ -71,7 +71,7 @@ where symbol = 'SPY'
   and expiry = '2019-03-15'
   and DATE_FORMAT(uts, '%Y-%m-%d') = '2019-03-15'
 group by symbol, expiry, `right`, strike
-order by t desc
+order by t desc;
 
 
 

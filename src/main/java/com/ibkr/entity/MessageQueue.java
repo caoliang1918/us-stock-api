@@ -36,6 +36,8 @@ public class MessageQueue implements Serializable, Delayed {
      */
     private String option;
 
+    private String channel;
+
     public MessageQueue() {
     }
 
@@ -78,6 +80,14 @@ public class MessageQueue implements Serializable, Delayed {
         this.option = option;
     }
 
+    public String getChannel() {
+        return channel;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -98,6 +108,7 @@ public class MessageQueue implements Serializable, Delayed {
                 ", date=" + date +
                 ", content='" + content + '\'' +
                 ", option='" + option + '\'' +
+                ", channel='" + channel + '\'' +
                 '}';
     }
 
