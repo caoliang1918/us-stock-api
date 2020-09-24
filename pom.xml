@@ -5,7 +5,7 @@
 
     <groupId>org.zhongweixian</groupId>
     <artifactId>us-stock-api</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
 
     <name>us-stock-api</name>
@@ -22,8 +22,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <docker.repostory>registry.cn-hangzhou.aliyuncs.com</docker.repostory>
-        <docker.registry.name>zhongweixian</docker.registry.name>
+        <docker.repostory>192.168.180.37:5000</docker.repostory>
+        <docker.registry.name>caoliang</docker.registry.name>
     </properties>
 
     <dependencies>
@@ -116,21 +116,17 @@
                 </executions>
             </plugin>
 
-            <!--<plugin>
+            <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>1.0.0</version>
+                <!-- mvn clean package docker:build -Dmaven.test.skip=true -->
                 <configuration>
-                    &lt;!&ndash;镜像名，这里用工程名&ndash;&gt;
                     <imageName>${docker.repostory}/${docker.registry.name}/${project.artifactId}:${project.version}</imageName>
-                    &lt;!&ndash;TAG,这里用工程版本号&ndash;&gt;
                     <imageTags>
                         <imageTag>${project.version}</imageTag>
                     </imageTags>
-                    &lt;!&ndash;java官方镜像&ndash;&gt;
-                    <baseImage>java:8u111-jdk</baseImage>
-                    &lt;!&ndash;该镜像的容器启动后，直接运行spring boot工程&ndash;&gt;
-                    <entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
+                    <dockerDirectory>src/main/docker</dockerDirectory>
                     <resources>
                         <resource>
                             <targetPath>/</targetPath>
@@ -138,45 +134,10 @@
                             <include>${project.build.finalName}.jar</include>
                         </resource>
                     </resources>
-                    <serverId>docker-aliyun</serverId>
-                    <registryUrl>${docker.repostory}</registryUrl>
-                    <pushImage>true</pushImage>
+                    <serverId>192.168.180.37</serverId>
+                    <forceTags>true</forceTags>
                 </configuration>
-            </plugin>-->
-
-            <!--<plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>dockerfile-maven-plugin</artifactId>
-                <version>1.4.4</version>
-                <executions>
-                    <execution>
-                        <id>default</id>
-                        <goals>
-                            <goal>build</goal>
-                            <goal>push</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    &lt;!&ndash;上下文路径配置，此处设置为项目根路径&ndash;&gt;
-                    <contextDirectory>${project.basedir}</contextDirectory>
-                    <dockerInfoDirectory>src/main/docker</dockerInfoDirectory>
-                    <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
-                    <repository>${docker.repostory}/${docker.registry.name}/${project.artifactId}:${project.version}</repository>
-                    <username>caoliang1918@gmail.com</username>
-                    <password>q11111111</password>
-                    <useMavenSettingsForAuth>docker-aliyun</useMavenSettingsForAuth>
-                    &lt;!&ndash;作为Dockerfile文件传入&ndash;&gt;
-                    <buildArgs>
-                        <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-                    </buildArgs>
-                </configuration>
-            </plugin>-->
-
+            </plugin>
         </plugins>
     </build>
-
-
-
-
 </project>

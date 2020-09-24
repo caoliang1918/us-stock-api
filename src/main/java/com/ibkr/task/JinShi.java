@@ -59,24 +59,21 @@ public class JinShi {
         }
         Document document = Jsoup.parse(responseEntity.getBody());
         //快讯板块
-        Element jinFlash = document.getElementById("J_flashList");
+        Element jinFlash = document.getElementById("jin_flash_list");
         Element element = jinFlash.child(0);
         logger.debug("element: \n{}", element);
-
-        logger.info("element class:{} , id:{} , date:{}", element.className(), element.id(), element.attr("data-id"));
 
         final String content = element.child(1).text();
         if (content.contains("图示") || content.contains("金十")) {
             return;
         }
 
-        Element hrefEle = element.child(0).getElementsByClass("jin-flash_icon").get(0);
-        String id = hrefEle.children().get(0).attr("href").substring(25, 41);
+        String id = element.attr("id");
         flagList.forEach(s -> {
             if (content.contains(s)) {
                 String text = content;
                 MessageQueue messageQueue = new MessageQueue();
-                messageQueue.setId(Long.parseLong(id));
+                messageQueue.setId(Long.parseLong(id.substring(5, 23)));
                 messageQueue.setOption("create");
                 messageQueue.setDate(new Date());
                 messageQueue.setChannel("金十");

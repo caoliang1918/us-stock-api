@@ -31,7 +31,7 @@ CONF_FOLDER="$WORKING_HOME/conf"
 
 # -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=56002
 # -Xmn512m -Xmx4g -Xms4g -XX:MetaspaceSize=256m
-JAVA_OPTS="-Dsun.misc.URLClassPath.disableJarChecking=true -server -Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -XX:+UseConcMarkSweepGC -XX:SurvivorRatio=8  -XX:MaxGCPauseMillis=500 -XX:+UseBiasedLocking -XX:+PrintGCApplicationStoppedTime -XX:+DisableExplicitGC -XX:+PrintGCDetails -XX:+PrintHeapAtGC -XX:+PrintTenuringDistribution -XX:+PrintGCDateStamps -XX:CMSFullGCsBeforeCompaction=0  -XX:CMSInitiatingOccupancyFraction=80 -XX:+HeapDumpOnOutOfMemoryError -Xloggc:$LOG_FOLDER/gc.log"
+JAVA_OPTS="-Dsun.misc.URLClassPath.disableJarChecking=true -server -Dfile.encoding=UTF8  -Duser.timezone=GMT+08 -XX:+UseConcMarkSweepGC -XX:SurvivorRatio=8  -XX:MaxGCPauseMillis=500 -XX:+UseBiasedLocking -XX:+PrintGCApplicationStoppedTime -XX:+DisableExplicitGC -XX:+PrintGCDetails -XX:+PrintHeapAtGC -XX:+PrintTenuringDistribution -XX:+PrintGCDateStamps -XX:CMSFullGCsBeforeCompaction=0  -XX:CMSInitiatingOccupancyFraction=80 -XX:+HeapDumpOnOutOfMemoryError -Xloggc:$LOG_FOLDER/gc.log"
 RUN_ARGS="--spring.config.location=file:../conf/"
 
 [[ -n "$APP_NAME" ]] && identity="$APP_NAME"
