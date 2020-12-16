@@ -15,7 +15,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class VipJianShi {
@@ -28,6 +30,26 @@ public class VipJianShi {
 
     @Autowired
     private QueueService queueService;
+
+    private List<String> flagList = new ArrayList<>();
+
+    {
+        flagList.add("摩根");
+        flagList.add("高盛");
+        flagList.add("瑞银");
+        flagList.add("评级");
+        flagList.add("行情");
+        flagList.add("开盘");
+        flagList.add("收盘");
+        flagList.add("纳斯达克");
+        flagList.add("标普");
+        flagList.add("指数");
+        flagList.add("美股");
+        flagList.add("期货");
+        flagList.add("前值");
+        flagList.add("IPO");
+        flagList.add("上涨");
+    }
 
     @Scheduled(cron = "0/10 * * * * ?")
     public void task() {
@@ -45,15 +67,21 @@ public class VipJianShi {
         logger.debug("element: \n{}", element);
 
         String content = element.getElementsByClass("content").text();
-        String href = element.getElementsByClass("content").attr("href");
-        String id = href.replace("/livenews/" ,"");
-        MessageQueue messageQueue = new MessageQueue();
-        messageQueue.setId(Long.parseLong(id));
-        messageQueue.setOption("create");
-        messageQueue.setDate(new Date());
-        messageQueue.setContent(content);
-        messageQueue.setChannel("见闻");
-        queueService.add(messageQueue);
+
+        flagList.forEach(s -> {
+            if (content.contains(s)) {
+                String href = element.getElementsByClass("content").attr("href");
+                String id = href.replace("/livenews/", "");
+                MessageQueue messageQueue = new MessageQueue();
+                messageQueue.setId(Long.parseLong(id));
+                messageQueue.setOption("create");
+                messageQueue.setDate(new Date());
+                messageQueue.setContent(content);
+                messageQueue.setChannel("见闻");
+                queueService.add(messageQueue);
+                return;
+            }
+        });
     }
 
 }
