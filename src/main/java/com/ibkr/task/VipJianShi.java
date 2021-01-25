@@ -1,12 +1,10 @@
 package com.ibkr.task;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.ibkr.entity.MessageQueue;
 import com.ibkr.queue.QueueService;
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +15,14 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
 
+/**
+ * 华尔街见闻
+ */
 @Component
 public class VipJianShi {
     private Logger logger = LoggerFactory.getLogger(VipJianShi.class);
 
-    private final static String BASE_URL = "https://vip.jianshiapp.com/live/us-stock";
+    private final static String BASE_URL = "https://api.wallstcn.com/apiv1/content/lives?channel=global-channel&accept=live%2Cvip-live&limit=20&cursor=";
 
     @Autowired
     private RestTemplate restTemplate;
@@ -35,20 +36,25 @@ public class VipJianShi {
         if (responseEntity == null || StringUtils.isBlank(responseEntity.getBody())) {
             return;
         }
-        Document document = Jsoup.parse(responseEntity.getBody());
-        //快讯美股
-        Elements groupByDay = document.getElementsByClass("group-by-day");
-        if (groupByDay == null || groupByDay.size() < 1) {
+        JSONObject jsonObject = JSONObject.parseObject(responseEntity.getBody());
+        if (jsonObject == null) {
             return;
         }
-        Element element = groupByDay.get(0).child(1);
+        JSONObject data = jsonObject.getJSONObject("data");
+
+        String next_cursor = data.getString("next_cursor");
+        JSONArray items = data.getJSONArray("items");
+        if (items == null || items.size() == 0) {
+            return;
+        }
+        JSONObject element = items.getJSONObject(0);
+
         logger.debug("element: \n{}", element);
 
-        String content = element.getElementsByClass("content").text();
-        String href = element.getElementsByClass("content").attr("href");
-        String id = href.replace("/livenews/" ,"");
+        String content = element.getString("content_text");
+        Long id = element.getLong("id");
         MessageQueue messageQueue = new MessageQueue();
-        messageQueue.setId(Long.parseLong(id));
+        messageQueue.setId(id);
         messageQueue.setOption("create");
         messageQueue.setDate(new Date());
         messageQueue.setContent(content);
