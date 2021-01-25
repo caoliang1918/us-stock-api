@@ -40,14 +40,20 @@ public class JinShi {
     {
         flagList.add("摩根");
         flagList.add("高盛");
-        flagList.add("新华社");
-        flagList.add("央视");
+        flagList.add("瑞银");
+        flagList.add("评级");
         flagList.add("行情");
         flagList.add("开盘");
         flagList.add("收盘");
         flagList.add("纳斯达克");
         flagList.add("标普");
         flagList.add("指数");
+        flagList.add("美股");
+        flagList.add("期货");
+        flagList.add("前值");
+        flagList.add("IPO");
+        flagList.add("上涨");
+
     }
 
 
@@ -82,6 +88,7 @@ public class JinShi {
                 messageQueue.setContent(text.replace("<h4>", "").replace("</h4>", ""));
                 queueService.add(messageQueue);
                 logger.info("id:{} , content:{}", messageQueue.getId(), messageQueue.getContent());
+                return;
             }
         });
     }
