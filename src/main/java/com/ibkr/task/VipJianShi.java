@@ -24,7 +24,7 @@ import java.util.List;
 public class VipJianShi {
     private Logger logger = LoggerFactory.getLogger(VipJianShi.class);
 
-    private final static String BASE_URL = "https://api.wallstcn.com/apiv1/content/lives?channel=global-channel&accept=live%2Cvip-live&limit=20&cursor=";
+    private final static String BASE_URL = "https://api.wallstcn.com/apiv1/content/lives?channel=us-stock-channel&client=pc&limit=20&first_page=true&accept=live%2Cvip-live";
 
     @Autowired
     private RestTemplate restTemplate;
