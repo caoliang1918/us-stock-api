@@ -24,7 +24,7 @@ public class CaiZhiTask {
     private Logger logger = LoggerFactory.getLogger(CaiZhiTask.class);
 
 
-    private String url = "https://www.zhitongcaijing.com/immediately.html?type=us-stock";
+    private String url = "https://www.zhitongcaijing.com/immediately.html?type=usstock";
 
     @Autowired
     private RestTemplate restTemplate;
@@ -41,16 +41,16 @@ public class CaiZhiTask {
         }
         Document document = Jsoup.parse(responseEntity.getBody());
 
-        Element element = document.getElementsByClass("tap-body list-immediately").get(0);
+        Element element = document.getElementsByClass("allday-box").first();
 
-        Element dl = element.child(3);
-        logger.info("{}, {}", dl.child(0).attr("data-cursor"), dl.child(1).text());
+        Element dl = element.child(1);
+        logger.debug("智通财经:{} , {}" , dl.childNodeSize()  , dl.child(0));
         MessageQueue messageQueue = new MessageQueue();
         messageQueue.setChannel("智通财经");
         messageQueue.setOption("create");
         messageQueue.setDate(new Date());
-        messageQueue.setContent(dl.child(1).text());
-        messageQueue.setId(Long.parseLong(dl.child(0).attr("data-cursor")));
+        messageQueue.setContent(dl.children().get(0).text());
+        messageQueue.setId(Long.valueOf(messageQueue.getContent().hashCode()));
         queueService.add(messageQueue);
     }
 }

@@ -66,7 +66,7 @@ public class JinShi {
         Document document = Jsoup.parse(responseEntity.getBody());
         //快讯板块
         Element jinFlash = document.getElementById("jin_flash_list");
-        Element element = jinFlash.child(0);
+        Element element = jinFlash.child(1);
         logger.debug("element: \n{}", element);
 
         final String content = element.child(1).text();
