@@ -9,6 +9,7 @@ import com.ibkr.entity.StockProduct;
 import com.ibkr.entity.StockQuery;
 import com.ibkr.service.StockQueryService;
 import com.ibkr.util.DateUtil;
+import com.tigerbrokers.stock.openapi.client.config.ClientConfig;
 import com.tigerbrokers.stock.openapi.client.constant.ApiServiceType;
 import com.tigerbrokers.stock.openapi.client.https.client.TigerHttpClient;
 import com.tigerbrokers.stock.openapi.client.https.request.TigerHttpRequest;
@@ -320,23 +321,28 @@ public class TigerTask {
             }
 
             @Override
-            public void subscribeEnd(JSONObject jsonObject) {
-                logger.info("subscribeEnd : {} ", jsonObject);
+            public void futureChange(JSONObject jsonObject) {
+
             }
 
             @Override
-            public void cancelSubscribeEnd(JSONObject jsonObject) {
-                logger.info("cancelSubscribeEnd : {} ", jsonObject);
+            public void depthQuoteChange(JSONObject jsonObject) {
+
+            }
+
+            @Override
+            public void subscribeEnd(String s, String s1, JSONObject jsonObject) {
+
+            }
+
+            @Override
+            public void cancelSubscribeEnd(String s, String s1, JSONObject jsonObject) {
+
             }
 
             @Override
             public void getSubscribedSymbolEnd(SubscribedSymbol subscribedSymbol) {
                 logger.info("getSubscribedSymbolEnd : {} ", subscribedSymbol);
-            }
-
-            @Override
-            public void client(WebSocketClient client) {
-                logger.info("client : {} ", client);
             }
 
             @Override
@@ -355,13 +361,38 @@ public class TigerTask {
             }
 
             @Override
-            public void connectAck() {
-                logger.info("connectAck ========= ");
+            public void connectionKickoff(int i, String s) {
+
             }
+
+            @Override
+            public void connectionAck() {
+
+            }
+
+            @Override
+            public void connectionAck(int i, int i1) {
+
+            }
+
+            @Override
+            public void hearBeat(String s) {
+
+            }
+
+            @Override
+            public void serverHeartBeatTimeOut(String s) {
+
+            }
+
         };
 
         ApiAuthentication apiAuthentication = ApiAuthentication.build(tigerId, privateKey);
-        client = new WebSocketClient("wss://openapi.itiger.com:8883", apiAuthentication, callback);
+
+
+        WebSocketClient client = WebSocketClient.getInstance().url(ClientConfig.DEFAULT_CONFIG.socketServerUrl)
+                .authentication(ApiAuthentication.build(tigerId, privateKey))
+                .apiComposeCallback(callback);
         client.connect();
 
 
@@ -380,9 +411,6 @@ public class TigerTask {
         client.subscribe(OrderStatus);
         client.subscribe(Asset);
         client.subscribe(Position);
-
-
-        callback.client(client);
     }
 
 

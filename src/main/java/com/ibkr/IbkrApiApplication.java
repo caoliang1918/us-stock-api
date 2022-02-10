@@ -1,6 +1,5 @@
 package com.ibkr;
 
-import com.ibkr.entity.MessageQueue;
 import com.tigerbrokers.stock.openapi.client.https.client.TigerHttpClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -12,7 +11,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.DelayQueue;
 
 @EnableScheduling
 @SpringBootApplication
@@ -29,7 +27,7 @@ public class IbkrApiApplication {
 
     @Bean
     public TigerHttpClient tigerHttpClient() {
-        return new TigerHttpClient(tigerHost, tigerId, privateKey, publicKey);
+        return new TigerHttpClient(tigerHost, tigerId, privateKey);
     }
 
     @Bean

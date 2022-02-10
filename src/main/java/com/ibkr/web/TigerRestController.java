@@ -48,7 +48,6 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.tigerbrokers.stock.openapi.client.struct.enums.FinancialReportField.re;
 
 /**
  * @author : caoliang1918@gmail.com
