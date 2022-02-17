@@ -1,12 +1,17 @@
 package com.ibkr.queue;
 
 import com.ibkr.entity.MessageQueue;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.concurrent.DelayQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**
  * Created by caoliang on 2019/1/14
@@ -15,11 +20,24 @@ import java.util.concurrent.DelayQueue;
 public class QueueServiceImpl implements QueueService {
     private Logger logger = LoggerFactory.getLogger(QueueServiceImpl.class);
 
+
+    @Value("${wx.address}")
+    private String wxAddress;
+
     private Map<Long, MessageQueue> queueMap = new HashMap<>();
     private Set<Long> sendMessage = new HashSet<>();
 
     public DelayQueue<MessageQueue> queue = new DelayQueue<MessageQueue>();
 
+    private ScheduledExecutorService threadPoolExecutor = new ScheduledThreadPoolExecutor(5,
+            new BasicThreadFactory.Builder().namingPattern("wall-pool-%d").daemon(true).build());
+
+
+    @PostConstruct
+    public void init(){
+        threadPoolExecutor.execute(new Consumer(this, wxAddress));
+
+    }
 
     @Override
     public void add(MessageQueue messageQueue) {
